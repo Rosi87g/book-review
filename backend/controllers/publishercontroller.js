@@ -8,6 +8,8 @@ import Publisher from '../models/publishermodel.js';
 import reviewModel from '../models/reviewModel.js';
 import sendEmail from '../config/sendEmail.js';
 
+const ADMIN_FRONTEND_URL = process.env.ADMIN_FRONTEND_URL || '_blank';
+
 // API FOR EDIT BOOK DETAILS
 const editBook = async (req, res) => {
   try {
@@ -361,7 +363,10 @@ const verifyPublisherEmail = async (req, res) => {
       <p>Your Publisher ID is: <strong>${publisher.publisherId}</strong></p>
     `);
 
-    res.json({ success: true, message: 'Email verified. Publisher ID sent to your email.' });
+    if (req.headers.accept && req.headers.accept.includes('text/html')) {
+      return res.redirect(`${ADMIN_FRONTEND_URL}/publisher-login`);
+    }
+
   } catch (error) {
     console.error('verifyPublisherEmail error:', error);
     res.status(500).json({ success: false, message: 'Verification failed' });
